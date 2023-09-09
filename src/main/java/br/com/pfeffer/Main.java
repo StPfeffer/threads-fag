@@ -7,7 +7,10 @@ import br.com.pfeffer.soma.SingleThreadedSum;
 
 public class Main {
     public static void main(String[] args) {
+        System.out.println("Soma Total\n");
         somaTotal();
+
+        System.out.println("\nTransferência Bancária\n");
         transferenciaBancaria();
     }
 
