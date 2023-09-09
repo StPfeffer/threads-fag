@@ -1,19 +1,69 @@
 package br.com.pfeffer;
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+import br.com.pfeffer.banco.BankAccountMultiThreaded;
+import br.com.pfeffer.banco.BankAccountSingleThreaded;
+import br.com.pfeffer.soma.MultithreadedSum;
+import br.com.pfeffer.soma.SingleThreadedSum;
+
 public class Main {
     public static void main(String[] args) {
-        // Press Alt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.print("Hello and welcome!");
-
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
-
-            // Press Shift+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
-        }
+        somaTotal();
+        transferenciaBancaria();
     }
+
+    private static void somaTotal() {
+        long[] array = new long[1450000000];
+
+        for (int i = 0; i < 10000000; i++) {
+            array[i] = i + 1;
+        }
+
+        int qtdeThreads = 4;
+
+        long inico = System.currentTimeMillis();
+        long somaTotal = MultithreadedSum.calcularTotalComMultithreading(array, qtdeThreads);
+        long fim = System.currentTimeMillis();
+
+        System.out.println("Soma total: " + somaTotal);
+        System.out.println("Tempo gasto com multithreading (" + qtdeThreads + " threads): " + (fim - inico) + " milissegundos");
+
+        inico = System.currentTimeMillis();
+        somaTotal = SingleThreadedSum.calculateSum(array);
+        fim = System.currentTimeMillis();
+
+        System.out.println("\nSoma total: " + somaTotal);
+        System.out.println("Tempo gasto sem multithreading: " + (fim - inico) + " milissegundos");
+    }
+
+    private static void transferenciaBancaria() {
+        System.out.println("Transferencia SingleThreaded");
+        BankAccountSingleThreaded contaSingleThread1 = new BankAccountSingleThreaded(1000);
+        BankAccountSingleThreaded contaSingleThread2 = new BankAccountSingleThreaded(500);
+
+        contaSingleThread1.transferir(contaSingleThread2, 200);
+
+        System.out.println("Saldo conta 1: " + contaSingleThread1.getSaldo());
+        System.out.println("Saldo conta 2: " + contaSingleThread2.getSaldo());
+
+        System.out.println("\nTransferencia MultiThreaded");
+        BankAccountMultiThreaded contaMultiThread1 = new BankAccountMultiThreaded(1000);
+        BankAccountMultiThreaded contaMultiThread2 = new BankAccountMultiThreaded(500);
+
+        Thread thread1 = new Thread(() -> contaMultiThread1.transferir(contaMultiThread2, 200));
+        Thread thread2 = new Thread(() -> contaMultiThread2.transferir(contaMultiThread1, 100));
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Saldo conta 1: " + contaMultiThread1.getSaldo());
+        System.out.println("Saldo conta 2: " + contaMultiThread2.getSaldo());
+    }
+
 }
