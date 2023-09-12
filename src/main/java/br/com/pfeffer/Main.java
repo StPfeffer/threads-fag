@@ -2,16 +2,24 @@ package br.com.pfeffer;
 
 import br.com.pfeffer.banco.BankAccountMultiThreaded;
 import br.com.pfeffer.banco.BankAccountSingleThreaded;
+import br.com.pfeffer.pastas.ForkJoinMain;
+import br.com.pfeffer.produto.Cliente;
+import br.com.pfeffer.produto.Estoque;
+import br.com.pfeffer.produto.Produto;
+import br.com.pfeffer.produto.Vendedor;
 import br.com.pfeffer.soma.MultithreadedSum;
 import br.com.pfeffer.soma.SingleThreadedSum;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Soma Total\n");
-        somaTotal();
+//        System.out.println("Soma Total\n");
+//        somaTotal();
 
-        System.out.println("\nTransferência Bancária\n");
-        transferenciaBancaria();
+//        System.out.println("\nProcessador de Pastas\n");
+//        ForkJoinMain.execute();
+
+        System.out.println("\nProduto\n");
+        produto();
     }
 
     private static void somaTotal() {
@@ -67,6 +75,33 @@ public class Main {
 
         System.out.println("Saldo conta 1: " + contaMultiThread1.getSaldo());
         System.out.println("Saldo conta 2: " + contaMultiThread2.getSaldo());
+    }
+
+    private static void produto() {
+        Estoque estoque = new Estoque();
+        estoque.adicionarProduto(new Produto("Camiseta", 1));
+        estoque.adicionarProduto(new Produto("Calça", 30));
+        estoque.adicionarProduto(new Produto("Tênis", 20));
+        estoque.adicionarProduto(new Produto("Bermuda", 15));
+
+        Cliente comprador1 = new Cliente(estoque, "Camiseta", 10);
+        Cliente comprador2 = new Cliente(estoque, "Calça", 5);
+        Cliente comprador3 = new Cliente(estoque, "Tênis", 4);
+        Cliente comprador4 = new Cliente(estoque, "Bermuda", 7);
+
+        Vendedor vendedor1 = new Vendedor(estoque, "Camiseta", 5);
+        Vendedor vendedor2 = new Vendedor(estoque, "Calça", 10);
+        Vendedor vendedor3 = new Vendedor(estoque, "Tênis", 7);
+        Vendedor vendedor4 = new Vendedor(estoque, "Bermuda", 3);
+
+        comprador1.start();
+        comprador2.start();
+        comprador3.start();
+        comprador4.start();
+        vendedor1.start();
+        vendedor2.start();
+        vendedor3.start();
+        vendedor4.start();
     }
 
 }
